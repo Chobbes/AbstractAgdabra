@@ -73,8 +73,5 @@ lemma-left-inj a₁ a₂ f (g , idcomp) eq = lemma-left-id a₁ a₂ g f idcomp 
 left-inverse→injective : ∀ {A B} (f : A → B) → left-inverse f → injective f
 left-inverse→injective f left-inv a₁ a₂ fas = lemma-left-inj a₁ a₂ f left-inv fas
 
-lemma-right-surj : ∀ {A B : Set} (b : B) → (f : A → B) → ∃ (λ g → f ∘ g ≡ id) → ∃ (λ a → f a ≡ b)
-lemma-right-surj b f (g , right) = g b , cong (λ f₁ → f₁ b) right
-
 right-inverse→surjective : ∀ {A B} (f : A → B) → right-inverse f → surjective f
-right-inverse→surjective f right b = lemma-right-surj b f right
+right-inverse→surjective f (g , right) b = g b , cong (λ f₁ → f₁ b) right
