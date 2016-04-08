@@ -61,11 +61,13 @@ _~_ : {A : Set} {a b c : A} → a ≡ b → b ≡ c → a ≡ c
 _~_ = trans
 
 
-lemma-left-id₁ : ∀ {A B : Set} (a : A) (g : B → A) (f : A → B) → g ∘ f ≡ id → g (f a) ≡ a
-lemma-left-id₁ a g f idcomp = cong (λ f₁ → f₁ a) idcomp s~ refl
+lemma-left-id₁ : ∀ {A B : Set} (g : B → A) (f : A → B) → g ∘ f ≡ id → (∀ a → g (f a) ≡ a)
+lemma-left-id₁ g f idcomp a = cong (λ f₁ → f₁ a) idcomp
+
 
 lemma-left-id : ∀ {A B : Set} (a₁ a₂ : A) (g : B → A) (f : A → B) → g ∘ f ≡ id → g (f a₁) ≡ g (f a₂) → a₁ ≡ a₂
-lemma-left-id a₁ a₂ g f idcomp comp = (comp ~ lemma-left-id₁ a₂ g f idcomp) s~ lemma-left-id₁ a₁ g f idcomp
+lemma-left-id a₁ a₂ g f idcomp comp = (comp ~ lemma-left-id₁ g f idcomp a₂) s~ lemma-left-id₁ g f idcomp a₁
+
 
 lemma-left-inj : ∀ {A B : Set} (a₁ a₂ : A) → (f : A → B) → ∃ (λ g → g ∘ f ≡ id) → f a₁ ≡ f a₂ → a₁ ≡ a₂
 lemma-left-inj a₁ a₂ f (g , idcomp) eq = lemma-left-id a₁ a₂ g f idcomp (cong (λ x → g x) eq)
@@ -75,3 +77,15 @@ left-inverse→injective f left-inv a₁ a₂ fas = lemma-left-inj a₁ a₂ f l
 
 right-inverse→surjective : ∀ {A B} (f : A → B) → right-inverse f → surjective f
 right-inverse→surjective f (g , right) b = g b , cong (λ f₁ → f₁ b) right
+
+
+
+postulate extensionality : {A : Set} {B : Set} {f g : A → B} → (∀ x → f x ≡ g x) → f ≡ g
+
+id-unique : ∀ {A : Set} → (f : A → A) → (∀ a → f a ≡ a) → f ≡ id
+id-unique f fa-prop = extensionality {f = f} {g = id} fa-prop
+
+surjective→right-inverse : ∀ {A B} (f : A → B) → surjective f → right-inverse f
+surjective→right-inverse f right = g , id-unique (f ∘ g) (λ b → proj₂ (right b))
+  where g = λ b → proj₁ (right b)
+
